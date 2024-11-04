@@ -6,4 +6,13 @@
 
 $ mvn -Dtest=<имя тестового класса> test
 
+##### Чтобы запустить тесты и отчеты:
+
+- mvn clean test
+
+- mvn allure:report
+
+- mvn jacoco:report
+
+Отчеты открыть через папку site, index.html в браузере
 
