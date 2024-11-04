@@ -1,6 +1,5 @@
 .allure/
 .idea/
-main/
 classes/
 generated-sources/
 generated-test-sources/

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MetroHomePage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TestingAPI_Sprint_7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">MetroHomePage.java</span></div><h1>MetroHomePage.java</h1><pre class="source lang-java linenums">/*Тебе предстоит написать несколько автотестов для учебного приложения Яндекс.Метро. Нужно проверить:
+- работу переключателя городов;
+- отображение времени для построенного маршрута;
+- отображение станции «Откуда» в карточке маршрута;
+- отображение станции «Куда» в карточке маршрута.
+Для тестов понадобится класс Page Object. Начни с него:
+- создай класс и внеси туда локаторы и методы, которые будешь использовать.
+ */
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+import java.util.List;
+
+public class MetroHomePage {
+    // Поле с экземпляром веб-драйвера
+    private final WebDriver driver;
+
+    // Локатор кнопки выпадающего списка городов по имени класса
+<span class="nc" id="L24">    private final By selectCityButton = By.className(&quot;select_metro__button&quot;);</span>
+
+    // Локатор поля ввода «Откуда» по XPATH, поиск по плейсхолдеру
+<span class="nc" id="L27">    private final By fieldFrom = By.xpath(&quot;.//input[@placeholder='Откуда']&quot;);</span>
+
+    // Локатор поля ввода «Куда» по XPATH, поиск по плейсхолдеру
+<span class="nc" id="L30">    private final By fieldTo = By.xpath(&quot;.//input[@placeholder='Куда']&quot;);</span>
+
+    // Локатор коллекций станций «Откуда» и «Куда» маршрута по имени класса
+<span class="nc" id="L33">    private final By routeStationFromTo = By.className(&quot;route-details-block__terminal-station&quot;);</span>
+
+    // Локатор для отображения времени маршрута
+<span class="nc" id="L36">    private final By routeTimes = By.className(&quot;route-list-item__time&quot;);</span>
+
+    // Конструктор класса MetroHomePage с параметром driver
+<span class="nc" id="L39">    public MetroHomePage(WebDriver driver) {</span>
+<span class="nc" id="L40">        this.driver = driver;</span>
+<span class="nc" id="L41">    }</span>
+
+    // Метод ожидания загрузки страницы: проверяет видимость станции «Театральная»
+    public void waitForLoadHomePage() {
+<span class="nc" id="L45">        new WebDriverWait(driver, Duration.ofSeconds(8))</span>
+<span class="nc" id="L46">                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(&quot;.//*[text() = 'Театральная']&quot;)));</span>
+<span class="nc" id="L47">    }</span>
+
+    // Метод выбора города по переданному названию
+    public void chooseCity(String cityName) {
+<span class="nc" id="L51">        driver.findElement(selectCityButton).click();</span>
+<span class="nc" id="L52">        driver.findElement(By.xpath(String.format(&quot;//*[text()='%s']&quot;, cityName))).click();</span>
+<span class="nc" id="L53">    }</span>
+
+    // Метод ввода названия станции в поле «Откуда»
+    public void setStationFrom(String stationFrom) {
+<span class="nc" id="L57">        driver.findElement(fieldFrom).sendKeys(stationFrom, Keys.DOWN, Keys.ENTER);</span>
+<span class="nc" id="L58">    }</span>
+
+    // Метод ввода названия станции в поле «Куда»
+    public void setStationTo(String stationTo) {
+<span class="nc" id="L62">        driver.findElement(fieldTo).sendKeys(stationTo, Keys.DOWN, Keys.ENTER);</span>
+<span class="nc" id="L63">    }</span>
+
+    // Метод ожидания построения маршрута
+    public void waitForLoadRoute() {
+<span class="nc" id="L67">        new WebDriverWait(driver, Duration.ofSeconds(3))</span>
+<span class="nc" id="L68">                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(&quot;//*[text()='Получить ссылку на маршрут']&quot;)));</span>
+<span class="nc" id="L69">    }</span>
+
+    // Метод построения маршрута
+    public void buildRoute(String stationFrom, String stationTo) {
+<span class="nc" id="L73">        setStationFrom(stationFrom);</span>
+<span class="nc" id="L74">        setStationTo(stationTo);</span>
+<span class="nc" id="L75">        waitForLoadRoute();</span>
+<span class="nc" id="L76">    }</span>
+
+    // Метод получения имени станции «Откуда» для построенного маршрута
+    public String getRouteStationFrom() {
+<span class="nc" id="L80">        return driver.findElements(routeStationFromTo).get(0).getText();</span>
+    }
+
+    // Метод получения имени станции «Куда» построенного маршрута
+    public String getRouteStationTo() {
+<span class="nc" id="L85">        return driver.findElements(routeStationFromTo).get(1).getText();</span>
+    }
+
+    // Метод получения примерного времени маршрута
+    public String getApproximateRouteTime(int routeNumber) {
+<span class="nc" id="L90">        List&lt;WebElement&gt; routeTimeElements = driver.findElements(By.className(&quot;route-list-item__time&quot;));</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">        if (routeNumber &lt; 0 || routeNumber &gt;= routeTimeElements.size()) {</span>
+<span class="nc" id="L92">            throw new IllegalArgumentException(&quot;Invalid route number.&quot;);</span>
+        }
+<span class="nc" id="L94">        return routeTimeElements.get(routeNumber).getText();</span>
+    }
+
+    // Метод проверки с ожиданием видимости станции метро
+    public void waitForStationVisibility(String stationName) {
+<span class="nc" id="L99">        new WebDriverWait(driver, Duration.ofSeconds(8))</span>
+<span class="nc" id="L100">                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format(&quot;//*[text()='%s']&quot;, stationName))));</span>
+<span class="nc" id="L101">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
